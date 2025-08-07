@@ -11,9 +11,10 @@ const queryClient = new QueryClient()
 const config = createConfig({
   chains: [base],
   transports: {
-    [base.id]: (window as any).ethereum ? undefined : http(),
+    [base.id]: http(),
   },
 })
+
 
 // Create the provider component
 export function Web3Provider({ children }: { children: React.ReactNode }) {
