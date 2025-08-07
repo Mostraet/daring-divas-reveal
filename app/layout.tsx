@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Web3Provider } from "./WagmiProvider"; // <-- Import our new provider
 
 export const metadata: Metadata = {
   title: "Daring Divas Reveal",
@@ -13,8 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {/* Wrap the children with our new provider */}
+        <Web3Provider>{children}</Web3Provider>
+      </body>
     </html>
   );
 }
-
+\
