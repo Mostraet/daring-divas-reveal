@@ -1,37 +1,20 @@
-import type { Metadata } from 'next'
-import Providers from './providers'             // 👈 import the wrapper
-import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'Daring Divas',
-  description: 'Holder-gated uncensored gallery',
-}
+  title: "Daring Divas Reveal",
+  description: "Reveal your Daring Divas NFTs",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* Wrap the entire app in WagmiProvider */}
-        <Providers>{children}</Providers>
-      </body>
+      <body>{children}</body>
     </html>
-  )
+  );
 }
 
