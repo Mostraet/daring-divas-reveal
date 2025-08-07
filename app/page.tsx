@@ -81,7 +81,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="rounded-md border border-gray-600 px-4 py-2 text-white transition-colors hover:border-[#ff55aa] hover:bg-[#ff55aa]"
           >
-            Back to Daring Divas Main Site
+            Back to Main Site
           </a>
         </header>
         <div className="flex flex-grow items-center justify-center">
@@ -115,7 +115,7 @@ export default function Home() {
           rel="noopener noreferrer"
           className="rounded-md border border-gray-600 px-4 py-2 text-white transition-colors hover:border-[#ff55aa] hover:bg-[#ff55aa]"
         >
-          Back to Daring Divas Main Site
+          Back to Main Site
         </a>
       </header>
 
