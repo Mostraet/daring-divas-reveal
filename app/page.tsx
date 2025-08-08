@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.0.0";
+const APP_VERSION = "v1.0.1";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -72,7 +72,6 @@ export default function Home() {
     setRevealedNfts((prev) => ({ ...prev, [tokenId]: !prev[tokenId] }))
   }
 
-  // --- UPDATED "NOT CONNECTED" PAGE ---
   if (!isConnected) {
     return (
       <div className="flex min-h-screen flex-col p-4 text-center md:p-8">
@@ -89,7 +88,7 @@ export default function Home() {
         <div className="flex flex-grow flex-col items-center justify-center">
           <h1 className="mb-4 text-4xl font-bold text-[#ff55aa]">Daring Divas App</h1>
           <p className="mb-8 max-w-md text-gray-300">
-            Connect your wallet to view your collection and reveal any NSFW cards you hold.
+            View your collection and reveal any NSFW cards you hold.
           </p>
           <button onClick={() => connect({ connector: injected() })} className="rounded bg-blue-600 px-6 py-3 text-lg text-white" disabled={isConnecting}>
             {isConnecting ? 'Connecting…' : 'Connect Wallet'}
@@ -112,7 +111,6 @@ export default function Home() {
     return { src: imageUrl };
   });
 
-  // --- NEW: Get collection data from the first NFT ---
   const collectionData = nfts.length > 0 ? nfts[0] : null;
 
   return (
@@ -130,18 +128,16 @@ export default function Home() {
 
       <div className="mb-8 flex items-center justify-between">
         <p className="truncate text-sm text-gray-400">Connected: {address}</p>
-        {/* --- UPDATED: Disconnect button hover style --- */}
         <button onClick={() => disconnect()} className="rounded bg-gray-800 px-3 py-1 text-white transition-colors hover:bg-[#ff55aa]">
           Disconnect
         </button>
       </div>
 
-      {/* --- NEW: Collection Info Section --- */}
       {collectionData && (
         <div className="mb-12 rounded-lg border border-gray-700 bg-gray-900/50 p-6">
           <h1 className="text-3xl font-bold text-white">{collectionData.collection?.name}</h1>
           <p className="mt-2 text-lg italic text-[#ff55aa]">"Pin Me Up, Honey!"</p>
-          <p className="mt-4 text-gray-300">{collectionData.description}</p>
+          <p className="mt-4 text-gray-300">"Forged in unyielding steel and clad in black leather, Freya carves her mark of order in the neon-drenched underbelly of Neonopolis. Dive into the cyberpunk shadows with this exclusive teaser for Daring Divas' fierce Captain Freya. Pack includes 101 cards across four Rarities and five pinup Tiers. Unlock Freya's secrets through Canonical lore, Naughty reveals (censored here, unlockable for holders at daringdivas.art), Nice teases, Altered glitches, and the abundant Apocrypha."</p>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
             <span>Ticker: <span className="font-mono text-gray-200">{collectionData.contract.symbol}</span></span>
             <span>Type: <span className="font-mono text-gray-200">{collectionData.contract.tokenType}</span></span>
@@ -153,7 +149,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="mt-6 inline-block text-blue-400 hover:text-blue-300"
           >
-            Trade collection on Vibe Market &rarr;
+            Trade on Vibe Market &rarr;
           </a>
         </div>
       )}
@@ -172,14 +168,22 @@ export default function Home() {
                 imageUrl = `/uncensored/${nft.tokenId}.jpg`;
               }
 
-              // --- NEW: Extract all traits from live metadata ---
               const attributes = nft.liveMetadata?.attributes || [];
               const rarityTrait = attributes.find((attr: any) => attr.trait_type === 'Rarity');
               const statusTrait = attributes.find((attr: any) => attr.trait_type === 'Status');
               const wearTrait = attributes.find((attr: any) => attr.trait_type === 'Wear');
               const wearValueTrait = attributes.find((attr: any) => attr.trait_type === 'Wear Value');
               const foilTrait = attributes.find((attr: any) => attr.trait_type === 'Foil');
-              const mintDate = nft.mint?.timestamp ? new Date(nft.mint.timestamp).toLocaleDateString() : 'N/A';
+              
+              // --- UPDATED: Date formatting logic ---
+              let mintDate = 'N/A';
+              if (nft.mint?.timestamp) {
+                const date = new Date(nft.mint.timestamp);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                mintDate = `${year}/${month}/${day}`;
+              }
 
               return (
                 <div key={nft.tokenId} className="flex flex-col rounded-lg border border-gray-700 bg-gray-900/50 p-3">
@@ -193,7 +197,6 @@ export default function Home() {
                   <div className="mt-3 flex-grow">
                     <p className="font-bold text-white">{nft.name}</p>
                     
-                    {/* --- NEW: Detailed card info --- */}
                     <div className="mt-2 space-y-1 text-xs text-gray-400">
                       <p>Status: <span className="font-semibold text-gray-200">{statusTrait?.value === 'Rarity Assigned' ? 'Opened' : 'Unopened'}</span></p>
                       <p>Rarity: <span className="font-semibold text-gray-200">{rarityTrait?.value || 'N/A'}</span></p>
