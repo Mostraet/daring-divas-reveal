@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.0.1";
+const APP_VERSION = "v1.0.2";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -100,11 +100,11 @@ export default function Home() {
   }
 
   const lightboxSlides = nfts.map(nft => {
-    const isCensored = !!censoredList[nft.tokenId];
+    const isCensoredByGist = !!censoredList[nft.tokenId];
     const isRevealed = !!revealedNfts[nft.tokenId];
     let imageUrl = nft.liveMetadata?.image || nft.image.cachedUrl || '';
 
-    if (isCensored && isRevealed) {
+    if (isCensoredByGist && isRevealed) {
       imageUrl = `/uncensored/${nft.tokenId}.jpg`;
     }
     
@@ -160,14 +160,6 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
           {nfts.length > 0 ? (
             nfts.map((nft, i) => {
-              const isCensored = !!censoredList[nft.tokenId];
-              const isRevealed = !!revealedNfts[nft.tokenId];
-              let imageUrl = nft.liveMetadata?.image || nft.image.cachedUrl || '';
-
-              if (isCensored && isRevealed) {
-                imageUrl = `/uncensored/${nft.tokenId}.jpg`;
-              }
-
               const attributes = nft.liveMetadata?.attributes || [];
               const rarityTrait = attributes.find((attr: any) => attr.trait_type === 'Rarity');
               const statusTrait = attributes.find((attr: any) => attr.trait_type === 'Status');
@@ -175,7 +167,16 @@ export default function Home() {
               const wearValueTrait = attributes.find((attr: any) => attr.trait_type === 'Wear Value');
               const foilTrait = attributes.find((attr: any) => attr.trait_type === 'Foil');
               
-              // --- UPDATED: Date formatting logic ---
+              // --- NEW: Simplified and corrected logic ---
+              const isOpened = statusTrait?.value === 'Rarity Assigned';
+              const isConfirmedNSFW = !!censoredList[nft.tokenId];
+              const isRevealed = !!revealedNfts[nft.tokenId];
+
+              let imageUrl = nft.liveMetadata?.image || nft.image.cachedUrl || '';
+              if (isConfirmedNSFW && isRevealed) {
+                imageUrl = `/uncensored/${nft.tokenId}.jpg`;
+              }
+
               let mintDate = 'N/A';
               if (nft.mint?.timestamp) {
                 const date = new Date(nft.mint.timestamp);
@@ -198,16 +199,19 @@ export default function Home() {
                     <p className="font-bold text-white">{nft.name}</p>
                     
                     <div className="mt-2 space-y-1 text-xs text-gray-400">
-                      <p>Status: <span className="font-semibold text-gray-200">{statusTrait?.value === 'Rarity Assigned' ? 'Opened' : 'Unopened'}</span></p>
-                      <p>Rarity: <span className="font-semibold text-gray-200">{rarityTrait?.value || 'N/A'}</span></p>
+                      <p>Status: <span className="font-semibold text-gray-200">{isOpened ? 'Opened' : 'Unopened'}</span></p>
+                      <p>Rarity: <span className="font-semibold text-gray-200">{isOpened ? (rarityTrait?.value || 'N/A') : 'N/A'}</span></p>
                       <p>Wear: <span className="font-semibold text-gray-200">{wearTrait?.value || 'N/A'} {wearValueTrait ? `(${(wearValueTrait.value * 100).toFixed(1)}%)` : ''}</span></p>
                       <p>Foil: <span className="font-semibold text-gray-200">{foilTrait?.value || 'N/A'}</span></p>
-                      <p>NSFW: <span className="font-semibold text-gray-200">{isCensored ? 'Yes' : 'No'}</span></p>
+                      <p>NSFW: <span className="font-semibold text-gray-200">
+                        {isOpened ? (isConfirmedNSFW ? 'Yes' : 'No') : 'N/A'}
+                      </span></p>
                       <p>Minted: <span className="font-semibold text-gray-200">{mintDate}</span></p>
                     </div>
                   </div>
                   
-                  {isCensored && (
+                  {/* --- UPDATED: Button only shows if the card is confirmed NSFW --- */}
+                  {isConfirmedNSFW && (
                     <div className="mt-3">
                       <button
                         onClick={() => handleReveal(nft.tokenId)}
