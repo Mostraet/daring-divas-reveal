@@ -222,7 +222,7 @@ export default function Home() {
                       </button>
                       {!isRevealed && (
                         <p className="mt-2 text-center text-xs text-gray-400">
-                          Visual change only.
+                          Temporary visual change only.
                         </p>
                       )}
                     </div>
