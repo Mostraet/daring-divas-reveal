@@ -35,7 +35,6 @@ export default function Home() {
         const response = await fetch(`${CENSORED_LIST_URL}?t=${new Date().getTime()}`);
         const data = await response.json();
         setCensoredList(data);
-        console.log("Successfully fetched censored list:", data);
       } catch (error) {
         console.error("Failed to fetch censored list:", error);
       }
@@ -60,7 +59,24 @@ export default function Home() {
           })
         );
         setNfts(enrichedNfts);
-        console.log("NFT METADATA FOR ONE NFT:", JSON.stringify(enrichedNfts[0], null, 2));
+        
+        // --- INVESTIGATION CODE START ---
+        // This is temporary code to check the metadata for a specific token ID.
+        const investigateSpecificToken = async () => {
+          console.log("--- Starting Investigation for Token #3 ---");
+          try {
+            const metadataForToken3 = await alchemy.nft.getNftMetadata(
+              DARING_DIVAS_CONTRACT,
+              "3" // The Token ID we want to investigate
+            );
+            console.log("INVESTIGATION - TOKEN #3 METADATA:", JSON.stringify(metadataForToken3, null, 2));
+          } catch (e) {
+            console.error("Failed to investigate Token #3:", e);
+          }
+        };
+        investigateSpecificToken();
+        // --- INVESTIGATION CODE END ---
+
       } catch (error) { console.error('Failed to fetch NFTs:', error) }
       finally { setIsLoadingNfts(false) }
     }
