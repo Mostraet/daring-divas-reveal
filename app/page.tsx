@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.0.2";
+const APP_VERSION = "v1.0.3";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -100,11 +100,11 @@ export default function Home() {
   }
 
   const lightboxSlides = nfts.map(nft => {
-    const isCensoredByGist = !!censoredList[nft.tokenId];
+    const isConfirmedNSFW = !!censoredList[nft.tokenId];
     const isRevealed = !!revealedNfts[nft.tokenId];
     let imageUrl = nft.liveMetadata?.image || nft.image.cachedUrl || '';
 
-    if (isCensoredByGist && isRevealed) {
+    if (isConfirmedNSFW && isRevealed) {
       imageUrl = `/uncensored/${nft.tokenId}.jpg`;
     }
     
@@ -167,7 +167,6 @@ export default function Home() {
               const wearValueTrait = attributes.find((attr: any) => attr.trait_type === 'Wear Value');
               const foilTrait = attributes.find((attr: any) => attr.trait_type === 'Foil');
               
-              // --- NEW: Simplified and corrected logic ---
               const isOpened = statusTrait?.value === 'Rarity Assigned';
               const isConfirmedNSFW = !!censoredList[nft.tokenId];
               const isRevealed = !!revealedNfts[nft.tokenId];
@@ -192,7 +191,8 @@ export default function Home() {
                     className="w-full cursor-pointer"
                     onClick={() => { setActiveImageIndex(i); setIsLightboxOpen(true); }}
                   >
-                    <img src={imageUrl} alt={nft.name} className="aspect-square w-full rounded-md object-cover" />
+                    {/* --- UPDATED: Changed aspect ratio to 5/7 --- */}
+                    <img src={imageUrl} alt={nft.name} className="aspect-[5/7] w-full rounded-md object-cover" />
                   </button>
                   
                   <div className="mt-3 flex-grow">
@@ -210,7 +210,6 @@ export default function Home() {
                     </div>
                   </div>
                   
-                  {/* --- UPDATED: Button only shows if the card is confirmed NSFW --- */}
                   {isConfirmedNSFW && (
                     <div className="mt-3">
                       <button
