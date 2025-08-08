@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.1.3";
+const APP_VERSION = "v1.1.4";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -49,10 +49,10 @@ const calculatePupScore = (nft: EnrichedNft, isConfirmedNSFW: boolean): number =
   const wearMultiplier = 2.0 - wearValue;
 
   // 3. Foil Multiplier
-  const foilMultiplier = foilTrait?.value !== 'None' ? 2.0 : 1.0;
+  const foilMultiplier = foilTrait?.value !== 'None' ? 10.0 : 1.0;
 
   // 4. NSFW Multiplier
-  const nsfwMultiplier = isConfirmedNSFW ? 1.5 : 1.0;
+  const nsfwMultiplier = isConfirmedNSFW ? 5 : 1.0;
 
   // 5. Age Multiplier
   let ageMultiplier = 1.0;
