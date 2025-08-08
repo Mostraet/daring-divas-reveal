@@ -9,11 +9,20 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.1.0";
+const APP_VERSION = "v1.1.1";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
-// --- NEW: SCORING LOGIC ---
+// --- TYPE DEFINITIONS ---
+interface EnrichedNft extends Nft {
+  liveMetadata?: any;
+}
+
+interface EnrichedNftWithScore extends EnrichedNft {
+  pupScore?: number;
+}
+
+// --- SCORING LOGIC ---
 const calculatePupScore = (nft: EnrichedNft, isConfirmedNSFW: boolean): number => {
   const attributes = nft.liveMetadata?.attributes || [];
   const rarityTrait = attributes.find((attr: any) => attr.trait_type === 'Rarity');
@@ -58,11 +67,6 @@ const calculatePupScore = (nft: EnrichedNft, isConfirmedNSFW: boolean): number =
   const rawScore = rarityMultiplier * wearMultiplier * foilMultiplier * nsfwMultiplier * ageMultiplier;
   return rawScore;
 };
-
-
-interface EnrichedNftWithScore extends EnrichedNft {
-  pupScore?: number;
-}
 
 export default function Home() {
   const { address, isConnected } = useAccount()
@@ -113,7 +117,6 @@ export default function Home() {
     fetchAndEnrichNfts()
   }, [isConnected, address])
 
-  // --- NEW: Calculate scores for all NFTs and the total score ---
   const nftsWithScores: EnrichedNftWithScore[] = useMemo(() => {
     return nfts.map(nft => ({
       ...nft,
@@ -172,7 +175,6 @@ export default function Home() {
         <div className="mb-12 rounded-lg border border-gray-700 bg-gray-900/50 p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h1 className="text-3xl font-bold text-white">{collectionData.collection?.name}</h1>
-            {/* --- NEW: Total PUP Score Display --- */}
             <div className="text-right">
               <p className="text-sm text-gray-400">Total Pin-Up Points</p>
               <p className="text-3xl font-bold text-[#ff55aa]">{totalPupScore.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
@@ -226,7 +228,6 @@ export default function Home() {
                   </button>
                   <div className="mt-3 flex-grow">
                     <p className="font-bold text-white">{nft.name}</p>
-                    {/* --- NEW: PUP Score Display for each card --- */}
                     {isOpened && (
                       <div className="mt-2 rounded bg-[#ff55aa]/20 px-2 py-1 text-center">
                         <p className="text-xs font-bold text-[#ff55aa]">PUPs: {nft.pupScore?.toFixed(2)}</p>
