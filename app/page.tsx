@@ -70,7 +70,7 @@ const calculatePupScore = (nft: EnrichedNft, isConfirmedNSFW: boolean): number =
 
   const rawScore = rarityMultiplier * wearMultiplier * foilMultiplier * nsfwMultiplier * ageMultiplier * tokenIdMultiplier;
   
-  return Math.sqrt(rawScore) * 100;
+  return Math.sqrt(rawScore) * 10;
 };
 
 export default function Home() {
