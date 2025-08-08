@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.0.3";
+const APP_VERSION = "v1.0.4";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -29,6 +29,9 @@ export default function Home() {
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  
+  // --- NEW: State for expanding the description ---
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     const fetchCensoredList = async () => {
@@ -113,6 +116,10 @@ export default function Home() {
 
   const collectionData = nfts.length > 0 ? nfts[0] : null;
 
+  // --- NEW: Logic for the expandable description ---
+  const fullDescription = "Forged in unyielding steel and clad in black leather, Freya carves her mark of order in the neon-drenched underbelly of Neonopolis. Dive into the cyberpunk shadows with this exclusive teaser for Daring Divas' fierce Captain Freya. Pack includes 101 cards across four Rarities and five pinup Tiers. Unlock Freya's secrets through Canonical lore, Naughty reveals (censored here, unlockable for holders at daringdivas.art), Nice teases, Altered glitches, and the abundant Apocrypha.";
+  const shortDescription = "Forged in unyielding steel and clad in black leather, Freya carves her mark of order in the neon-drenched underbelly of Neonopolis.";
+
   return (
     <main className="container mx-auto p-4 md:p-8">
       <header className="mb-8 flex justify-end">
@@ -137,7 +144,18 @@ export default function Home() {
         <div className="mb-12 rounded-lg border border-gray-700 bg-gray-900/50 p-6">
           <h1 className="text-3xl font-bold text-white">{collectionData.collection?.name}</h1>
           <p className="mt-2 text-lg italic text-[#ff55aa]">"Pin Me Up, Honey!"</p>
-          <p className="mt-4 text-gray-300">"Forged in unyielding steel and clad in black leather, Freya carves her mark of order in the neon-drenched underbelly of Neonopolis. Dive into the cyberpunk shadows with this exclusive teaser for Daring Divas' fierce Captain Freya. Pack includes 101 cards across four Rarities and five pinup Tiers. Unlock Freya's secrets through Canonical lore, Naughty reveals (censored here, unlockable for holders at daringdivas.art), Nice teases, Altered glitches, and the abundant Apocrypha."</p>
+          
+          {/* --- UPDATED: Description with "more/less" button --- */}
+          <p className="mt-4 text-gray-300">
+            {isDescriptionExpanded ? fullDescription : `${shortDescription}... `}
+            <button 
+              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              className="ml-1 inline-block text-blue-400 hover:text-blue-300"
+            >
+              {isDescriptionExpanded ? 'less' : 'more'}
+            </button>
+          </p>
+
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
             <span>Ticker: <span className="font-mono text-gray-200">{collectionData.contract.symbol}</span></span>
             <span>Type: <span className="font-mono text-gray-200">{collectionData.contract.tokenType}</span></span>
@@ -191,7 +209,6 @@ export default function Home() {
                     className="w-full cursor-pointer"
                     onClick={() => { setActiveImageIndex(i); setIsLightboxOpen(true); }}
                   >
-                    {/* --- UPDATED: Changed aspect ratio to 5/7 --- */}
                     <img src={imageUrl} alt={nft.name} className="aspect-[5/7] w-full rounded-md object-cover" />
                   </button>
                   
