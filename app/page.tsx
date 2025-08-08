@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.1.1";
+const APP_VERSION = "v1.1.2";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -81,6 +81,11 @@ export default function Home() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  // --- FIX: Restore the handleReveal function ---
+  const handleReveal = (tokenId: string) => {
+    setRevealedNfts((prev) => ({ ...prev, [tokenId]: !prev[tokenId] }))
+  }
 
   useEffect(() => {
     const fetchCensoredList = async () => {
