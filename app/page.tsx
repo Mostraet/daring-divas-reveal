@@ -60,6 +60,7 @@ export default function Home() {
           })
         );
         setNfts(enrichedNfts);
+        console.log("NFT METADATA FOR ONE NFT:", JSON.stringify(enrichedNfts[0], null, 2));
       } catch (error) { console.error('Failed to fetch NFTs:', error) }
       finally { setIsLoadingNfts(false) }
     }
@@ -139,11 +140,6 @@ export default function Home() {
                 imageUrl = `/uncensored/${nft.tokenId}.jpg`;
               }
 
-              // --- NEW: Find the Rarity Trait ---
-              const rarityTrait = nft.raw.metadata.attributes?.find(
-                (attr: any) => attr.trait_type === 'Rarity'
-              );
-
               return (
                 <div key={nft.tokenId} className="rounded border border-gray-700 p-2">
                   <button
@@ -157,13 +153,6 @@ export default function Home() {
                   </button>
                   
                   <p className="mt-2 font-bold text-white">{nft.name}</p>
-
-                  {/* --- NEW: Display the Rarity Trait if it exists --- */}
-                  {rarityTrait && (
-                    <p className="text-sm text-gray-400">
-                      {rarityTrait.value}
-                    </p>
-                  )}
                   
                   {isCensored && (
                     <>
