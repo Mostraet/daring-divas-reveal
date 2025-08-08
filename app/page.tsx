@@ -70,7 +70,6 @@ export default function Home() {
     setRevealedNfts((prev) => ({ ...prev, [tokenId]: !prev[tokenId] }))
   }
 
-  // --- UPDATED "NOT CONNECTED" STATE START ---
   if (!isConnected) {
     return (
       <div className="flex min-h-screen flex-col p-4 md:p-8">
@@ -92,7 +91,6 @@ export default function Home() {
       </div>
     )
   }
-  // --- UPDATED "NOT CONNECTED" STATE END ---
 
   const lightboxSlides = nfts.map(nft => {
     const isCensored = !!censoredList[nft.tokenId];
@@ -140,6 +138,12 @@ export default function Home() {
               if (isCensored && isRevealed) {
                 imageUrl = `/uncensored/${nft.tokenId}.jpg`;
               }
+
+              // --- NEW: Find the Rarity Trait ---
+              const rarityTrait = nft.raw.metadata.attributes?.find(
+                (attr: any) => attr.trait_type === 'Rarity'
+              );
+
               return (
                 <div key={nft.tokenId} className="rounded border border-gray-700 p-2">
                   <button
@@ -153,6 +157,13 @@ export default function Home() {
                   </button>
                   
                   <p className="mt-2 font-bold text-white">{nft.name}</p>
+
+                  {/* --- NEW: Display the Rarity Trait if it exists --- */}
+                  {rarityTrait && (
+                    <p className="text-sm text-gray-400">
+                      {rarityTrait.value}
+                    </p>
+                  )}
                   
                   {isCensored && (
                     <>
