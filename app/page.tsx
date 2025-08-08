@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.1.5";
+const APP_VERSION = "v1.1.6";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -52,7 +52,7 @@ const calculatePupScore = (nft: EnrichedNft, isConfirmedNSFW: boolean): number =
   const foilMultiplier = foilTrait?.value !== 'None' ? 5.0 : 1.0;
 
   // 4. NSFW Multiplier
-  const nsfwMultiplier = isConfirmedNSFW ? 3 : 1.0;
+  const nsfwMultiplier = isConfirmedNSFW ? 3.0 : 1.0;
 
   // 5. Age Multiplier
   let ageMultiplier = 1.0;
@@ -64,7 +64,7 @@ const calculatePupScore = (nft: EnrichedNft, isConfirmedNSFW: boolean): number =
     ageMultiplier = 1 + (diffDays * 0.001);
   }
 
-  // --- NEW: 6. Token ID Multiplier ---
+  // 6. Token ID Multiplier
   const tokenId = parseInt(nft.tokenId, 10);
   const tokenIdMultiplier = !isNaN(tokenId) ? (2 * Math.exp(-0.005 * (tokenId - 1)) + 1) : 1.0;
 
@@ -193,7 +193,6 @@ export default function Home() {
                   </svg>
                 </div>
                 <div className="absolute bottom-full mb-2 w-64 rounded-lg bg-gray-800 p-3 text-left text-xs text-gray-300 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-                  {/* --- UPDATED: Tooltip description --- */}
                   Your collection's total score based on card rarity, condition, foil, age, Token ID, and NSFW status.
                 </div>
               </div>
@@ -248,11 +247,14 @@ export default function Home() {
                   </button>
                   <div className="mt-3 flex-grow">
                     <p className="font-bold text-white">{nft.name}</p>
-                    {isOpened && (
-                      <div className="mt-2 rounded bg-[#ff55aa]/20 px-2 py-1 text-center">
+                    {/* --- UPDATED: Logic for unopened card PUPs display --- */}
+                    <div className="mt-2 rounded bg-[#ff55aa]/20 px-2 py-1 text-center">
+                      {isOpened ? (
                         <p className="text-xs font-bold text-[#ff55aa]">PUPs: {nft.pupScore?.toFixed(2)}</p>
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-xs font-bold text-[#ff55aa]/60">PUPs: Reveal to Score</p>
+                      )}
+                    </div>
                     <div className="mt-2 space-y-1 text-xs text-gray-400">
                       <p>Status: <span className="font-semibold text-gray-200">{isOpened ? 'Opened' : 'Unopened'}</span></p>
                       <p>Rarity: <span className="font-semibold text-gray-200">{isOpened ? (rarityTrait?.value || 'N/A') : 'N/A'}</span></p>
