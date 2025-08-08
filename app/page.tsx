@@ -9,7 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 // --- CONFIGURATION ---
-const APP_VERSION = "v1.1.2";
+const APP_VERSION = "v1.1.3";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
@@ -82,7 +82,6 @@ export default function Home() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
-  // --- FIX: Restore the handleReveal function ---
   const handleReveal = (tokenId: string) => {
     setRevealedNfts((prev) => ({ ...prev, [tokenId]: !prev[tokenId] }))
   }
@@ -181,7 +180,18 @@ export default function Home() {
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h1 className="text-3xl font-bold text-white">{collectionData.collection?.name}</h1>
             <div className="text-right">
-              <p className="text-sm text-gray-400">Total Pin-Up Points</p>
+              {/* --- NEW: Tooltip added here --- */}
+              <div className="group relative flex items-center justify-end gap-2">
+                <p className="text-sm text-gray-400">Total Pin-Up Points</p>
+                <div className="cursor-help">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 text-gray-500">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a1 1 0 0 0 0 2v3a1 1 0 0 0 1 1h1a1 1 0 1 0 0-2v-3a1 1 0 0 0-1-1H9Z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="absolute bottom-full mb-2 w-64 rounded-lg bg-gray-800 p-3 text-left text-xs text-gray-300 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                  Your collection's total score based on card rarity, condition, foil, age, and NSFW status.
+                </div>
+              </div>
               <p className="text-3xl font-bold text-[#ff55aa]">{totalPupScore.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
             </div>
           </div>
