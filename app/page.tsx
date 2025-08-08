@@ -252,7 +252,7 @@ export default function Home() {
                       {isOpened ? (
                         <p className="text-xs font-bold text-[#ff55aa]">PUPs: {nft.pupScore?.toFixed(2)}</p>
                       ) : (
-                        <p className="text-xs font-bold text-[#ff55aa]/60">PUPs: Reveal to Score</p>
+                        <p className="text-xs font-bold text-[#ff55aa]/60">Open card to show score</p>
                       )}
                     </div>
                     <div className="mt-2 space-y-1 text-xs text-gray-400">
