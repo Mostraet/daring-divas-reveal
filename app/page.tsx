@@ -12,8 +12,9 @@ import "yet-another-react-lightbox/styles.css";
 const DARING_DIVAS_CONTRACT = '0xD127d434266eBF4CB4F861071ebA50A799A23d9d'
 const CENSORED_LIST_URL = 'https://gist.githubusercontent.com/Mostraet/3e4cc308c270f278499f1b03440ad2ab/raw/censored-list.json';
 
+// --- UPDATED: Add a field for our live metadata ---
 interface EnrichedNft extends Nft {
-  uniqueImageUrl?: string;
+  liveMetadata?: any; // Using 'any' for flexibility with the fetched data
 }
 
 export default function Home() {
@@ -49,33 +50,23 @@ export default function Home() {
       try {
         const alchemy = new Alchemy({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, network: Network.BASE_MAINNET });
         const response = await alchemy.nft.getNftsForOwner(address, { contractAddresses: [DARING_DIVAS_CONTRACT] });
+        
+        // --- MAJOR CHANGE: We now fetch the live metadata from the tokenUri for each NFT ---
         const enrichedNfts = await Promise.all(
           response.ownedNfts.map(async (nft) => {
             try {
+              // Fetch the live data directly from the source
               const metadataResponse = await fetch(nft.tokenUri!);
-              const metadata = await metadataResponse.json();
-              return { ...nft, uniqueImageUrl: metadata.image };
-            } catch (e) { return nft; }
+              const liveMetadata = await metadataResponse.json();
+              // Attach the live metadata to our NFT object
+              return { ...nft, liveMetadata: liveMetadata };
+            } catch (e) { 
+              // If fetching live data fails, return the base NFT object
+              return nft; 
+            }
           })
         );
         setNfts(enrichedNfts);
-        
-        // --- INVESTIGATION CODE START ---
-        // This is temporary code to check the metadata for a specific token ID.
-        const investigateSpecificToken = async () => {
-          console.log("--- Starting Investigation for Token #3 ---");
-          try {
-            const metadataForToken3 = await alchemy.nft.getNftMetadata(
-              DARING_DIVAS_CONTRACT,
-              "3" // The Token ID we want to investigate
-            );
-            console.log("INVESTIGATION - TOKEN #3 METADATA:", JSON.stringify(metadataForToken3, null, 2));
-          } catch (e) {
-            console.error("Failed to investigate Token #3:", e);
-          }
-        };
-        investigateSpecificToken();
-        // --- INVESTIGATION CODE END ---
 
       } catch (error) { console.error('Failed to fetch NFTs:', error) }
       finally { setIsLoadingNfts(false) }
@@ -112,7 +103,8 @@ export default function Home() {
   const lightboxSlides = nfts.map(nft => {
     const isCensored = !!censoredList[nft.tokenId];
     const isRevealed = !!revealedNfts[nft.tokenId];
-    let imageUrl = nft.uniqueImageUrl || nft.image.cachedUrl || '';
+    // --- UPDATED: Use the image from our live metadata ---
+    let imageUrl = nft.liveMetadata?.image || nft.image.cachedUrl || '';
 
     if (isCensored && isRevealed) {
       imageUrl = `/uncensored/${nft.tokenId}.jpg`;
@@ -150,11 +142,17 @@ export default function Home() {
               const isCensored = !!censoredList[nft.tokenId];
               const isRevealed = !!revealedNfts[nft.tokenId];
               
-              let imageUrl = nft.uniqueImageUrl || nft.image.cachedUrl || '';
+              // --- UPDATED: Use the image from our live metadata ---
+              let imageUrl = nft.liveMetadata?.image || nft.image.cachedUrl || '';
 
               if (isCensored && isRevealed) {
                 imageUrl = `/uncensored/${nft.tokenId}.jpg`;
               }
+
+              // --- NEW: Find the Rarity Trait from LIVE metadata ---
+              const rarityTrait = nft.liveMetadata?.attributes?.find(
+                (attr: any) => attr.trait_type === 'Rarity'
+              );
 
               return (
                 <div key={nft.tokenId} className="rounded border border-gray-700 p-2">
@@ -169,6 +167,13 @@ export default function Home() {
                   </button>
                   
                   <p className="mt-2 font-bold text-white">{nft.name}</p>
+
+                  {/* --- NEW: Display the Rarity Trait if it exists --- */}
+                  {rarityTrait && (
+                    <p className="text-sm text-gray-400">
+                      {rarityTrait.value}
+                    </p>
+                  )}
                   
                   {isCensored && (
                     <>
